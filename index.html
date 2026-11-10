@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Usuários</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        h1, h2 { color: #333; }
+        form { display: flex; gap: 10px; margin-bottom: 30px; }
+        input { padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
+        button { padding: 10px 20px; font-size: 14px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciador de Usuários</h1>
+
+    <h2>Cadastrar Novo Usuário</h2>
+    <form id="formUsuario">
+        <input type="text" id="nome" placeholder="Nome" required>
+        <input type="email" id="email" placeholder="E-mail" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <h2>Lista de Usuários</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaUsuarios">
+        </tbody>
+    </table>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000/usuarios";
+
+        async function carregarUsuarios() {
+            try {
+                const resposta = await fetch(API_URL);
+                const usuarios = await resposta.json();
+                
+                const tbody = document.getElementById("tabelaUsuarios");
+                tbody.innerHTML = "";
+
+                usuarios.forEach(user => {
+                    const linha = `<tr>
+                        <td>${user.id}</td>
+                        <td>${user.nome}</td>
+                        <td>${user.email}</td>
+                    </tr>`;
+                    tbody.innerHTML += linha;
+                });
+            } catch (erro) {
+                console.error("Erro ao carregar usuários:", erro);
+            }
+        }
+
+        document.getElementById("formUsuario").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome, email })
+            });
+
+            document.getElementById("formUsuario").reset();
+            carregarUsuarios();
+        });
+
+        carregarUsuarios();
+    </script>
+
+</body>
+</html>
