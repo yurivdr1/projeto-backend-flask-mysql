@@ -1,3 +1,9 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -7,10 +13,10 @@ CORS(app)
 
 def obter_conexao():
     return mysql.connector.connect(
-        host="localhost",
-        user="yuri",
-        password="qetqetqe1",
-        database="seu_banco"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
     )
 
 def criar_tabela():
